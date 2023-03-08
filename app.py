@@ -3,7 +3,7 @@ import subprocess
 import datetime
 import os
 from werkzeug.utils import secure_filename
-
+import glob 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './uploads'
 
@@ -12,9 +12,15 @@ ALLOWED_EXTENSIONS = {'mp4', 'mkv', 'avi', 'mov', 'mxf'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def deleteUploadFiles(path):
+    files = glob.glob(path)
+    for file in files:
+        os.remove(file)
+
 @app.route('/', methods=['GET', 'POST'])
 def convert():
     if request.method == "POST":
+        deleteUploadFiles('./uploads')
         file = request.files['file']
         start_time = request.form.get('start')
         duration = request.form.get('duration')
